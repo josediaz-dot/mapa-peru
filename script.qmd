@@ -1,0 +1,56 @@
+
+```{r}
+# ===============================
+# MAPA DEL PERÚ POR DEPARTAMENTOS
+# ===============================
+
+# 1. Instalar librerías (solo la primera vez)
+# install.packages("sf")
+# install.packages("ggplot2")
+# install.packages("dplyr")
+
+# 2. Cargar librerías
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# 3. Cargar mapa del Perú (GeoJSON)
+mapa <- st_read("peru_departamental_simple.geojson")
+
+# Verificar estructura
+print(head(mapa))
+
+# 4. Crear datos por departamento (ejemplo)
+df <- data.frame(
+  NOMBDEP = c(
+    "AMAZONAS","ANCASH","APURIMAC","AREQUIPA","AYACUCHO",
+    "CAJAMARCA","CALLAO","CUSCO","HUANCAVELICA","HUANUCO",
+    "ICA","JUNIN","LA LIBERTAD","LAMBAYEQUE","LIMA",
+    "LORETO","MADRE DE DIOS","MOQUEGUA","PASCO","PIURA",
+    "PUNO","SAN MARTIN","TACNA","TUMBES","UCAYALI"
+  ),
+  valor = 1:25  # valores de prueba
+)
+
+# Verificar datos
+print(df)
+
+# 5. Unir datos con el mapa
+mapa <- mapa %>%
+  left_join(df, by = "NOMBDEP")
+
+# Verificar unión
+print(mapa[, c("NOMBDEP", "valor")])
+
+# 6. Crear el mapa
+ggplot(data = mapa) +
+  geom_sf(aes(fill = valor)) +
+  scale_fill_viridis_c(
+    option = "viridis",
+    na.value = "grey",
+    name = "Valor"
+  ) +
+  ggtitle("Mapa del Perú por Departamentos") +
+  theme_minimal()
+summary(mapa$valor)
+```
